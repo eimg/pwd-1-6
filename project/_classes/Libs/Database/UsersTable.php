@@ -66,6 +66,30 @@ class UsersTable
         return $statement->rowCount();
     }
 
+    public function suspend($id)
+    {
+        $statement = $this->db->prepare("UPDATE users SET suspended=1 WHERE id=:id");
+        $statement->execute(['id' => $id]);
+
+        return $statement->rowCount();
+    }
+
+    public function unsuspend($id)
+    {
+        $statement = $this->db->prepare("UPDATE users SET suspended=0 WHERE id=:id");
+        $statement->execute(['id' => $id]);
+
+        return $statement->rowCount();
+    }
+
+    public function changeRole($id, $role_id)
+    {
+        $statement = $this->db->prepare("UPDATE users SET role_id=:role_id WHERE id=:id");
+        $statement->execute(['id' => $id, 'role_id' => $role_id]);
+
+        return $statement->rowCount();
+    }
+
     public function delete($id)
     {
         $statment = $this->db->prepare("DELETE FROM users WHERE id=:id");
