@@ -2,10 +2,18 @@
 
 @section("content")
     <div class="container" style="max-width: 800px">
+
+        @if(session("info"))
+            <div class="alert alert-info">
+                {{ session("info") }}
+            </div>
+        @endif
+
         <div class="card mb-2 border-primary">
             <div class="card-body">
                 <h3>{{ $article->title }}</h3>
                 <div class="text-muted">
+                    <b class="text-success">{{ $article->user->name }}</b>,
                     Category: <b>{{ $article->category->name }}</b>,
                     {{ $article->created_at }}
                 </div>
@@ -23,9 +31,18 @@
             </li>
             @foreach ($article->comments as $comment)
                 <li class="list-group-item">
+                    <a href="{{ url("/comments/delete/$comment->id") }}" class="btn-close float-end"></a>
+
+                    <b class="text-success">{{ $comment->user->name }}</b> -
                     {{ $comment->content }}
                 </li>
             @endforeach
         </ul>
+        <form action="{{ url("/comments/add") }}" method="post">
+            @csrf
+            <input type="hidden" name="article_id" value="{{ $article->id }}">
+            <textarea name="content" class="form-control my-2"></textarea>
+            <button class="btn btn-secondary">Add Comment</button>
+        </form>
     </div>
 @endsection

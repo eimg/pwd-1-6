@@ -4,9 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ArticleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware("auth")->except(["index", "detail"]);
+    }
+
     public function index()
     {
         $data = Article::latest()->paginate(5);
@@ -54,8 +60,12 @@ class ArticleController extends Controller
     public function delete($id)
     {
         $article = Article::find($id);
-        $article->delete();
 
-        return redirect("/articles")->with("info", "An article is deleted");
+        if(Gate::allows("delete-article", $article)) {
+            $article->delete();
+            return redirect("/articles")->with("info", "An article is deleted");
+        }
+
+        return back()->with("info", "Unauthorized action");
     }
 }
