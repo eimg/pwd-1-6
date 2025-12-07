@@ -20,8 +20,11 @@
                 <p>
                     {{ $article->body }}
                 </p>
-                <a href="{{ url("/articles/delete/$article->id") }}"
+                
+                @can("delete-article", $article)
+                    <a href="{{ url("/articles/delete/$article->id") }}"
                     class="btn btn-sm btn-outline-danger">Delete</a>
+                @endcan
             </div>
         </div>
 
@@ -31,18 +34,23 @@
             </li>
             @foreach ($article->comments as $comment)
                 <li class="list-group-item">
-                    <a href="{{ url("/comments/delete/$comment->id") }}" class="btn-close float-end"></a>
+                    @can("delete-comment", $comment)
+                        <a href="{{ url("/comments/delete/$comment->id") }}" class="btn-close float-end"></a>
+                    @endcan
 
                     <b class="text-success">{{ $comment->user->name }}</b> -
                     {{ $comment->content }}
                 </li>
             @endforeach
         </ul>
-        <form action="{{ url("/comments/add") }}" method="post">
-            @csrf
-            <input type="hidden" name="article_id" value="{{ $article->id }}">
-            <textarea name="content" class="form-control my-2"></textarea>
-            <button class="btn btn-secondary">Add Comment</button>
-        </form>
+        
+        @auth
+            <form action="{{ url("/comments/add") }}" method="post">
+                @csrf
+                <input type="hidden" name="article_id" value="{{ $article->id }}">
+                <textarea name="content" class="form-control my-2"></textarea>
+                <button class="btn btn-secondary">Add Comment</button>
+            </form>
+        @endauth
     </div>
 @endsection

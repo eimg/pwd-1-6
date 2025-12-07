@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
@@ -33,7 +35,11 @@ class ArticleController extends Controller
 
     public function add()
     {
-        return view("articles.add");
+        $categories = Category::all();
+
+        return view("articles.add", [
+            "categories" => $categories,
+        ]);
     }
 
     public function create()
@@ -52,6 +58,7 @@ class ArticleController extends Controller
         $article->title = request()->title;
         $article->body = request()->body;
         $article->category_id = request()->category_id;
+        $article->user_id = Auth::id();
         $article->save();
 
         return redirect("/articles");
