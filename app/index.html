@@ -25,10 +25,15 @@
 
     <script>
         const api = "http://localhost:8000/api/categories";
+        const token = "1|x0TDpMxiPwwRRRgncpf966SYcgnyF0YQHLw5oFQUf34f2dd0";
 
-        fetch(api)
-            .then(res => res.json())
-            .then(data => data.map(item => createItem(item)));
+        fetch(api, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        .then(res => res.json())
+        .then(data => data.map(item => createItem(item)));
 
         document.querySelector("form").onsubmit = e => {
             e.preventDefault();
@@ -39,7 +44,8 @@
                 method: "POST",
                 body: JSON.stringify({ name }),
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
             })
             .then(res => res.json())
@@ -52,6 +58,20 @@
             const li = document.createElement("li");
             li.classList.add("list-group-item");
             li.textContent = item.name;
+
+            const del = document.createElement("a");
+            del.setAttribute("href", "#");
+            del.classList.add("fa-solid", "fa-trash", "text-danger", "float-end");
+            del.onclick = () => {
+                fetch(`${api}/${item.id}`, { 
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+                li.remove();
+            }
+            li.appendChild(del);
 
             document.querySelector("#list").appendChild(li);
         }
